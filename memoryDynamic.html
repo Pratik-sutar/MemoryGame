@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Game</title>
+    <style>
+      .container {
+        display: grid;
+        grid-template-columns: repeat(4, 2fr);
+        gap: 10px;
+      }
+
+      .circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+      }
+      .closed::before {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background-color: aqua;
+        border-radius: 50%;
+      }
+      .open::before {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        background-color: blue,palevioletred,greenyellow,darkred;
+        border-radius: 50%;
+      }
+      .correct::before {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        content: "\2713";
+        position: absolute;
+        z-index: 50;
+        width: 150px;
+        height: 150px;
+      }
+
+      .wrong::before {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        content: "\00D7";
+        position: absolute;
+        z-index: 50;
+        width: 150px;
+        height: 150px;
+      }
+    </style>
+  </head>
+  <body>
+      <h3 id="color"></h3>
+    <div class="container"></div>
+
+    <script>
+      window.onload = function () {
+        let boxes = initGrid(4);
+        let container = document.querySelector(".container");
+        let expectedColor =  getColor();
+        document.getElementById("color").innerHTML = `Select the color ${expectedColor}`
+        console.log(expectedColor)
+        let started = false;
+        for (let box of boxes) {
+          box.color = getColor();
+          box.draw();
+          container.appendChild(box.div);
+        }
+        setTimeout(() => {
+          toggleAll();
+          started = true;
+        }, 2000);
+
+        function initGrid(size) {
+          let boxes = [];
+          for (let i = 0; i < size ** 2; i++) {
+            let box = buildBox();
+            box.onCliick();
+            boxes.push(box);
+          }
+          return boxes;
+        }
+
+        function getColor() {
+          let colors = ["red", "green", "yellow", "orange", "purple","blue","pink"];
+          let i = Math.floor(Math.random() * 100) % colors.length;
+          return colors[i];
+        }
+
+        function buildBox() {
+          let div = document.createElement("div");
+          div.classList.add("circle");
+          return {
+            color: "",
+            state: "open",
+            div,
+            onCliick() {
+              let that = this;
+              this.div.addEventListener("click", () => {
+                if (started) {
+                  let newClass = colorMatch(that.color) ? "correct" : "wrong";
+                  that.div.classList.replace("closed", newClass);
+                  if (newClass == "wrong") {
+                    started = false;
+                    toggleAll();
+                    alert("You loose game will restart")
+                    location.reload()
+                  }else{
+                      toggleAll();
+                      alert("you won ")
+                      location.reload()
+                  }
+
+                }
+
+                //   that.div.classList.remove("closed");
+                //   that.div.classList.add(newClass);
+              });
+            },
+            draw() {
+              this.div.style.backgroundColor = this.color;
+            },
+          };
+        }
+
+        function toggleAll() {
+          for (let box of boxes) {
+            box.state = box.state == "open" ? "closed" : "open";
+            if (box.state == "open") {
+              box.div.classList.remove("closed");
+            } else {
+              box.div.classList.add("closed");
+            }
+          }
+        }
+
+        //   let expectedColor = "yellow";
+
+        function colorMatch(givenColor) {
+          return expectedColor == givenColor;
+        }
+      };
+
+      // function chosenBox() {
+      //   document.querySelector(".container").addEventListener("click", clicked);
+      //   function clicked(e) {
+      //     document.getElementById("box").classList.remove("closed");
+      //     console.log("Hi")
+      //   }
+
+      // }
+      // chosenBox()
+    </script>
+  </body>
+</html>
