@@ -67,8 +67,10 @@
         let boxes = initGrid(4);
         let container = document.querySelector(".container");
         let expectedColor =  getColor();
-        document.getElementById("color").innerHTML = `Select the color ${expectedColor}`
-        console.log(expectedColor)
+        setTimeout(() => {
+        document.getElementById("color").innerHTML = `Select the color ${expectedColor}`;
+        }, 5000);
+        
         let started = false;
         for (let box of boxes) {
           box.color = getColor();
